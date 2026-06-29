@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FlatShading", "Proj1_FlatSh
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GouraudShading", "Proj2_GouraudShading\GouraudShading.vcxproj", "{F6BF94DC-3FDF-4B26-BEAE-6425F5B0370A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PhongShading", "Proj3_PhongShading\PhongShading.vcxproj", "{EECF3325-D903-4989-9BD0-0A7571DD5985}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -21,6 +23,10 @@ Global
 		{F6BF94DC-3FDF-4B26-BEAE-6425F5B0370A}.Debug|x86.Build.0 = Debug|Win32
 		{F6BF94DC-3FDF-4B26-BEAE-6425F5B0370A}.Release|x86.ActiveCfg = Release|Win32
 		{F6BF94DC-3FDF-4B26-BEAE-6425F5B0370A}.Release|x86.Build.0 = Release|Win32
+		{EECF3325-D903-4989-9BD0-0A7571DD5985}.Debug|x86.ActiveCfg = Debug|Win32
+		{EECF3325-D903-4989-9BD0-0A7571DD5985}.Debug|x86.Build.0 = Debug|Win32
+		{EECF3325-D903-4989-9BD0-0A7571DD5985}.Release|x86.ActiveCfg = Release|Win32
+		{EECF3325-D903-4989-9BD0-0A7571DD5985}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
