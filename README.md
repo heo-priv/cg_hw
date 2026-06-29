@@ -277,10 +277,72 @@ for (i=0..steps) setPixel(round(p0 + (p1-p0)*i/steps));
 
 ---
 
-## Assignment 6 — (작성 예정)
+## Assignment 6 — Shading the Rasterized Sphere (`ass/HW6_202111387`)
+
+### 개요
+- **목표**: HW5 래스터라이저로 그린 구를 **Blinn-Phong 셰이딩 3종(Flat/Gouraud/Phong)** + **새 기능(Deferred Shading)** 으로 렌더. **한 솔루션에 4개 프로젝트**.
+  - Q1 `FlatShading` → Q2 `GouraudShading` → Q3 `PhongShading` → Q4 `DeferredShading`
+- **공통 베이스**: HW5 변환·래스터화·깊이버퍼 파이프라인 그대로. 셰이딩만 추가.
+
+### 공통 코드 구조 (발표용 핵심)
+- **파이프라인/래스터화/깊이버퍼**: HW5와 동일 (`M = 뷰포트·투영·카메라·모델`, edge-function 무게중심, z-buffer).
+- **Blinn-Phong** 조명 모델:
+  ```
+  L = ka·Ia + kd·I·max(0, n·l) + ks·I·max(0, n·h)^p
+  ```
+  재질 `ka(0,1,0)·kd(0,0.5,0)·ks(0.8)·p64`, 점광원 (−4,4,−3) 백색 단위세기, ambient `Ia=0.2`, 마지막에 감마 2.2.
+- **법선**: 단위구라서 **정점 법선 = 정점좌표**(이미 단위). 모델변환이 균등 스케일+이동이라 방향 불변.
+- **세 셰이딩의 차이 = "조명을 어디서 평가하느냐"**: 면(Flat) / 정점(Gouraud) / 픽셀(Phong).
+
+### 프로젝트별 설명 (발표 포인트 + 핵심 코드)
+
+**Proj1 `FlatShading` (Q1)** — 삼각형당 1색.
+```cpp
+vec3 centroid = (wA+wB+wC)/3;                       // 삼각형 무게중심(월드)
+vec3 faceN = cross(wB-wA, wC-wA);                   // 면 법선(외적)
+if (dot(faceN, centroid-center) < 0) faceN = -faceN;// 바깥쪽으로 정렬
+vec3 col = shade(centroid, faceN);                  // 면당 1회 평가 → 면 전체에 적용
+```
+- 발표: **per-triangle(면) 법선**으로 셰이딩 1회 → 각진(faceted) 결과.
+
+**Proj2 `GouraudShading` (Q2)** — 정점당 셰이딩 후 색 보간.
+```cpp
+vColor[i] = shade(world[i], normalize(gVertices[i])); // 정점마다 색 계산
+...
+vec3 col = a*cA + bb*cB + c*cC;                       // 픽셀에서 정점 색 보간
+```
+- 발표: **per-vertex 법선**으로 정점에서 계산 → 보간. 매끈하지만 하이라이트가 정점에서만 샘플돼 **흐려짐**.
+
+**Proj3 `PhongShading` (Q3)** — 위치·법선 보간 후 픽셀당 셰이딩.
+```cpp
+vec3 P = a*pA + bb*pB + c*pC;        // 위치 보간
+vec3 N = a*nA + bb*nB + c*nC;        // 법선 보간(픽셀에서 재정규화)
+vec3 col = shade(P, N);              // per-pixel 평가
+```
+- 발표: **per-pixel(per-fragment) 법선**으로 픽셀마다 계산 → **또렷한 하이라이트**. (Flat→Gouraud→Phong 품질 향상)
+
+**Proj4 `DeferredShading` (Q4, 새 기능)** — 2-pass G-buffer 방식.
+```cpp
+// ① 지오메트리 패스: 셰이딩 안 하고 G-buffer에 표면 정보만 저장
+gPosition[idx]=P;  gNormal[idx]=N;  gAlbedo[idx]=kd;  // (+depth)
+// ② 라이팅 패스: G-buffer 읽어 픽셀마다 1회, 모든 광원 합산
+for (light : gLights) col += albedo*light.color*max(0,n·l) + ks*light.color*max(0,n·h)^p;
+```
+- **무엇인가**: 조명을 **나중에(deferred)** 하는 2단계 파이프라인. *무엇이 보이는가(geometry)* 와 *어떻게 빛나는가(lighting)* 를 분리.
+  - 포워드(Q1~Q3)는 래스터화하며 즉시 셰이딩 → 가려질 픽셀도 셰이딩 후 버림.
+  - 디퍼드는 ① 보이는 표면 정보만 G-buffer에 모으고 ② 그걸 읽어 **보이는 픽셀만** 1회 셰이딩.
+- **왜 새 기능인가**: Q1~Q3는 같은 포워드 파이프라인의 변형(평가 위치만 다름)이지만, deferred는 **파이프라인 구조 자체가 다른 별개 기법**. (PDF Q4 예시 "Using other shading models (Deferred shading)"에 해당)
+- **demonstrate**: 조명이 지오메트리와 분리돼 **광원 추가가 라이팅 패스에만** 듦 → 광원 3개(흰·주황·파랑)로 여러 색 하이라이트를 보여줌. (단일 광원이면 결과는 Phong과 동일 — 기법만 다름)
+- **장단점**: (+) 많은 광원에 효율적·오버드로 제거·후처리 용이 / (−) G-buffer 메모리·반투명/MSAA 까다로움.
 
 ### 어려웠던 점
-- _작업하면서 기록_
+1. **세 셰이딩의 "평가 위치" 구분** — Flat(면)/Gouraud(정점)/Phong(픽셀)에서 무게중심좌표로 무엇을(색 vs 위치·법선) 보간하는지 정확히 구현해야 했음.
+2. **Flat 법선 정의** — "per-triangle normal"을 면 법선(외적)으로 잡고, 메시 winding이 일정치 않아 **구 중심 기준 바깥쪽으로 정렬**(flip)해야 했음.
+3. **참조 이미지 정확 일치** — "be careful with floating-point" 경고대로, 색·하이라이트가 참조와 같아야 해서 재질/조명/감마를 스펙 그대로 적용. (Mac 실행 불가 → 단계별로 빌드 확인)
+4. **Deferred 2-pass 설계** — 포워드를 지오메트리 패스(G-buffer 기록)와 라이팅 패스(G-buffer 소비)로 분리.
 
 ### AI 도움을 받은 부분
-- _작업하면서 기록_
+- **Blinn-Phong 셰이딩 3종 구현**: Flat(면 법선·centroid), Gouraud(정점 색 보간), Phong(위치·법선 보간 후 per-pixel).
+- **Deferred shading 파이프라인**: G-buffer(위치/법선/albedo) 지오메트리 패스 + 다중 광원 라이팅 패스, 그리고 개념·장단점 설명(발표 대본).
+- **참조 이미지 분석**으로 재질/조명/감마 일치 확인.
+- **4프로젝트 솔루션 구성**(복제·GUID·sln 등록) + Mac↔Windows git 동기화 + self-contained 라이브러리.
