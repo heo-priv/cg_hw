@@ -5,6 +5,8 @@ VisualStudioVersion = 17.13.35913.81
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Rasterizer", "Proj1_Rasterizer\Rasterizer.vcxproj", "{066385AD-5E3B-4731-B8B6-8263558EE5A0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Wireframe", "Proj2_Wireframe\Wireframe.vcxproj", "{2F818421-622F-471B-9C48-F52BC53AC27A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -15,6 +17,10 @@ Global
 		{066385AD-5E3B-4731-B8B6-8263558EE5A0}.Debug|x86.Build.0 = Debug|Win32
 		{066385AD-5E3B-4731-B8B6-8263558EE5A0}.Release|x86.ActiveCfg = Release|Win32
 		{066385AD-5E3B-4731-B8B6-8263558EE5A0}.Release|x86.Build.0 = Release|Win32
+		{2F818421-622F-471B-9C48-F52BC53AC27A}.Debug|x86.ActiveCfg = Debug|Win32
+		{2F818421-622F-471B-9C48-F52BC53AC27A}.Debug|x86.Build.0 = Debug|Win32
+		{2F818421-622F-471B-9C48-F52BC53AC27A}.Release|x86.ActiveCfg = Release|Win32
+		{2F818421-622F-471B-9C48-F52BC53AC27A}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
