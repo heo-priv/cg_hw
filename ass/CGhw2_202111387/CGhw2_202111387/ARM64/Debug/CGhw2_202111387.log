@@ -1,0 +1,57 @@
+﻿shader.obj : error LNK2019: unresolved external symbol __imp___glewAttachShader referenced in function "unsigned int __cdecl LoadShaders(char const *,char const *)" (?LoadShaders@@YAIPEBD0@Z)
+shader.obj : error LNK2019: unresolved external symbol __imp___glewCompileShader referenced in function "unsigned int __cdecl LoadShaders(char const *,char const *)" (?LoadShaders@@YAIPEBD0@Z)
+shader.obj : error LNK2019: unresolved external symbol __imp___glewCreateProgram referenced in function "unsigned int __cdecl LoadShaders(char const *,char const *)" (?LoadShaders@@YAIPEBD0@Z)
+shader.obj : error LNK2019: unresolved external symbol __imp___glewCreateShader referenced in function "unsigned int __cdecl LoadShaders(char const *,char const *)" (?LoadShaders@@YAIPEBD0@Z)
+shader.obj : error LNK2019: unresolved external symbol __imp___glewDeleteShader referenced in function "unsigned int __cdecl LoadShaders(char const *,char const *)" (?LoadShaders@@YAIPEBD0@Z)
+shader.obj : error LNK2019: unresolved external symbol __imp___glewDetachShader referenced in function "unsigned int __cdecl LoadShaders(char const *,char const *)" (?LoadShaders@@YAIPEBD0@Z)
+shader.obj : error LNK2019: unresolved external symbol __imp___glewGetProgramInfoLog referenced in function "unsigned int __cdecl LoadShaders(char const *,char const *)" (?LoadShaders@@YAIPEBD0@Z)
+shader.obj : error LNK2019: unresolved external symbol __imp___glewGetProgramiv referenced in function "unsigned int __cdecl LoadShaders(char const *,char const *)" (?LoadShaders@@YAIPEBD0@Z)
+shader.obj : error LNK2019: unresolved external symbol __imp___glewGetShaderInfoLog referenced in function "unsigned int __cdecl LoadShaders(char const *,char const *)" (?LoadShaders@@YAIPEBD0@Z)
+shader.obj : error LNK2019: unresolved external symbol __imp___glewGetShaderiv referenced in function "unsigned int __cdecl LoadShaders(char const *,char const *)" (?LoadShaders@@YAIPEBD0@Z)
+shader.obj : error LNK2019: unresolved external symbol __imp___glewLinkProgram referenced in function "unsigned int __cdecl LoadShaders(char const *,char const *)" (?LoadShaders@@YAIPEBD0@Z)
+shader.obj : error LNK2019: unresolved external symbol __imp___glewShaderSource referenced in function "unsigned int __cdecl LoadShaders(char const *,char const *)" (?LoadShaders@@YAIPEBD0@Z)
+texture.obj : error LNK2019: unresolved external symbol __imp_glBindTexture referenced in function "unsigned int __cdecl loadBMP_custom(char const *)" (?loadBMP_custom@@YAIPEBD@Z)
+hw2.obj : error LNK2001: unresolved external symbol __imp_glBindTexture
+texture.obj : error LNK2019: unresolved external symbol __imp_glGenTextures referenced in function "unsigned int __cdecl loadBMP_custom(char const *)" (?loadBMP_custom@@YAIPEBD@Z)
+texture.obj : error LNK2019: unresolved external symbol __imp_glPixelStorei referenced in function "unsigned int __cdecl loadDDS(char const *)" (?loadDDS@@YAIPEBD@Z)
+texture.obj : error LNK2019: unresolved external symbol __imp_glTexImage2D referenced in function "unsigned int __cdecl loadBMP_custom(char const *)" (?loadBMP_custom@@YAIPEBD@Z)
+texture.obj : error LNK2019: unresolved external symbol __imp_glTexParameteri referenced in function "unsigned int __cdecl loadBMP_custom(char const *)" (?loadBMP_custom@@YAIPEBD@Z)
+texture.obj : error LNK2019: unresolved external symbol __imp___glewCompressedTexImage2D referenced in function "unsigned int __cdecl loadDDS(char const *)" (?loadDDS@@YAIPEBD@Z)
+texture.obj : error LNK2019: unresolved external symbol __imp___glewGenerateMipmap referenced in function "unsigned int __cdecl loadBMP_custom(char const *)" (?loadBMP_custom@@YAIPEBD@Z)
+hw2.obj : error LNK2019: unresolved external symbol __imp_glClear referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol __imp_glClearColor referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol __imp_glDeleteTextures referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol __imp_glDepthFunc referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol __imp_glDrawArrays referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol __imp_glEnable referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol __imp_glewInit referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol glfwInit referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol glfwTerminate referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol glfwWindowHint referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol glfwCreateWindow referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol glfwWindowShouldClose referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol glfwPollEvents referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol glfwSetInputMode referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol glfwGetKey referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol glfwMakeContextCurrent referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol glfwSwapBuffers referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol __imp___glewActiveTexture referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol __imp___glewBindBuffer referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol __imp___glewBufferData referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol __imp___glewDeleteBuffers referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol __imp___glewGenBuffers referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol __imp___glewDeleteProgram referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol __imp___glewDisableVertexAttribArray referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol __imp___glewEnableVertexAttribArray referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol __imp___glewGetUniformLocation referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol __imp___glewUniform1i referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol __imp___glewUniformMatrix4fv referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol __imp___glewUseProgram referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol __imp___glewVertexAttribPointer referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol __imp___glewBindVertexArray referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol __imp___glewDeleteVertexArrays referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol __imp___glewGenVertexArrays referenced in function main
+hw2.obj : error LNK2019: unresolved external symbol __imp_glewExperimental referenced in function main
+C:\Users\heow\source\repos\CGhw2_202111387\lib\GLEW_1130.lib : warning LNK4272: library machine type 'x64' conflicts with target machine type 'ARM64'
+C:\Users\heow\source\repos\CGhw2_202111387\lib\glfw3.lib : warning LNK4272: library machine type 'x64' conflicts with target machine type 'ARM64'
+C:\Users\heow\source\repos\CGhw2_202111387\ARM64\Debug\CGhw2_202111387.exe : fatal error LNK1120: 53 unresolved externals
