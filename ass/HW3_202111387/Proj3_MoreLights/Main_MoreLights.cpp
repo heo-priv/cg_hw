@@ -270,8 +270,12 @@ void render()
     scene.add(&s2);
     scene.add(&s3);
     scene.ambient = vec3(1.0f, 1.0f, 1.0f);                       // white ambient, unit intensity
-    scene.add(Light(vec3(-4.0f, 4.0f, -3.0f), vec3(1.0f)));       // light 1: upper-left  (same as Q2)
-    scene.add(Light(vec3( 4.0f, 4.0f, -3.0f), vec3(1.0f)));       // light 2: upper-right (NEW - Q3 feature)
+    // Two lights at 0.5 intensity each. Using 0.5 (instead of 1.0) keeps a
+    // SINGLE light from saturating the floor to white, so a region shadowed
+    // from only one light stays a visible gray instead of washing out. Result:
+    // each object casts two distinct shadows, darkest where they overlap.
+    scene.add(Light(vec3(-4.0f, 4.0f, -3.0f), vec3(0.5f)));       // light 1: upper-left
+    scene.add(Light(vec3( 4.0f, 4.0f, -3.0f), vec3(0.5f)));       // light 2: upper-right (NEW - Q3 feature)
 
     // --- Camera (identical to Q1) ---
     Camera camera(
