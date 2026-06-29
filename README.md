@@ -219,13 +219,61 @@ scene.add(Light(vec3( 4,4,-3), vec3(0.5)));   // 광원 2 (추가)
 
 ---
 
-## Assignment 5 — (작성 예정)
+## Assignment 5 — Software Rasterizer (`ass/HW5_202111387`)
+
+### 개요
+- **목표**: **직접 만든 소프트웨어 래스터라이저**로 삼각형으로 분할된 구를 그림. OpenGL 하드웨어 래스터화 금지(OpenGL은 결과 픽셀버퍼를 `glDrawPixels`로 띄우는 용도만). **한 솔루션에 2개 프로젝트**.
+  - Q1 `Rasterizer` → Q2 `Wireframe`
+- **공통 베이스**: 교수님 제공 `sphere_scene.cpp`(구를 삼각형으로 분할하는 인덱스 버퍼 생성. **정점 배열 채우기는 TODO라 직접 구현**). 환경은 HW4 빌드 환경 복사(VS2022, x86, GLFW+GLEW+GLM).
+
+### 공통 코드 구조 (발표용 핵심)
+- **메시 생성 `create_scene()`**: width=32·height=16로 구를 분할 → **정점 450개, 삼각형 868개**. 정점은 구면좌표 `(sinθcosφ, cosθ, −sinθsinφ)`로 채우고, 제공된 인덱스 버퍼로 삼각형을 구성.
+- **변환 파이프라인** (강의/Shirley):
+  ```
+  M = M_viewport · M_ortho · M_persp · M_camera · M_model
+  screen = (M · v).xyz / (M · v).w      // 마지막에 w로 나눠 원근분할
+  ```
+  - **모델**: 단위구 → `scale(2)` 후 `translate(0,0,−7)` (반지름 2, 중심 (0,0,−7))
+  - **카메라**: eye=0, u·v·w=월드축, −w 응시 → **항등행렬**
+  - **투영**: `l,r,b,t,n,f` (n=−0.1, f=−1000, **n·f가 음수인 Shirley 방식**). `makeProjection()`이 `M_ortho·M_persp` 반환.
+  - **뷰포트**: NDC [−1,1] → 1024² 화면.
+- **디스플레이**: `render()`가 `OutputImage`(float RGB)를 채우고 `glDrawPixels`로 출력.
+
+### 프로젝트별 설명 (발표 포인트 + 핵심 코드)
+
+**Proj1 `Rasterizer` (Q1)** — 변환 + 삼각형 채우기 + 깊이버퍼, 무음영 흰 구.
+```cpp
+vec4 q = M * vec4(vertex,1); vec3 scr = q.xyz / q.w;          // 정점 → 화면좌표
+// 삼각형마다 bounding box 안의 픽셀에 대해 edge-function(무게중심):
+float w0=edge(B,C,p), w1=edge(C,A,p), w2=edge(A,B,p);
+if (모두 같은 부호) {                                          // 픽셀이 삼각형 내부
+    float depth = (w0*A.z + w1*B.z + w2*C.z)/area;            // ndc.z 보간
+    if (depth > depthBuffer[idx]) { depthBuffer[idx]=depth; 흰색 찍기; }  // z-buffer
+}
+```
+- 발표 포인트: ① 변환 파이프라인(모델→카메라→투영→뷰포트, w 나눗셈), ② edge-function으로 삼각형 내부 판정, ③ **깊이버퍼로 가림 처리**(이 컨벤션에선 near가 ndc.z 큼). 출력은 무음영이라 매끈한 흰 원.
+
+**Proj2 `Wireframe` (Q2, 새 기능)** — 선 래스터화(와이어프레임).
+```cpp
+// 같은 파이프라인으로 정점 투영 후, 채우기 대신 삼각형 3모서리를 선으로:
+drawLine(A,B); drawLine(B,C); drawLine(C,A);
+// drawLine: DDA — 긴 축 기준 1px씩 전진하며 픽셀 찍기
+int steps = ceil(max(|dx|,|dy|));
+for (i=0..steps) setPixel(round(p0 + (p1-p0)*i/steps));
+```
+- 발표 포인트: 같은 변환 파이프라인 재사용 + **DDA 선 래스터화**로 삼각형 메시를 드러냄. 뒷면 컬링 안 해 앞·뒤 모서리가 다 보이는 지구본형 그물망. (PDF 예시 "line rasterization"에 해당)
 
 ### 어려웠던 점
-- _작업하면서 기록_
+1. **제공 코드의 TODO 직접 구현** — `sphere_scene.cpp`는 인덱스 버퍼만 만들고 정점 배열은 비어 있어, 구면좌표 공식으로 정점 450개를 채워야 했음.
+2. **변환 파이프라인 부호** — 과제가 `n=−0.1, f=−1000`처럼 **z값(음수)** 으로 near/far를 주는 Shirley 방식이라(흔한 OpenGL의 양수 거리와 반대), 투영행렬·깊이 방향을 헷갈리기 쉬움. (Mac에서 실행을 못 해 **행렬 체인을 손으로 검산**해 정점 (1,0,0)→화면 (658,512)임을 확인하고 진행)
+3. **MSVC 특이사항** — `M_PI`는 `#define _USE_MATH_DEFINES` 필요, `<Windows.h>`의 `min`/`max` 매크로 충돌을 막으려 `#define NOMINMAX` 추가.
+4. **빈 `.vcxproj` 버그** — Q2 클론 스크립트에서 `open(쓰기).write(open(읽기).read())`로 한 줄에 처리했더니 **쓰기 모드가 파일을 먼저 비운 뒤 읽혀** `Wireframe.vcxproj`가 0바이트가 됨 → VS "루트 요소 없음" 에러. 안전한 read→write 순서로 재생성해 해결.
 
 ### AI 도움을 받은 부분
-- _작업하면서 기록_
+- **래스터라이저 전체 구현**: 제공 메시의 정점 배열 완성, 변환 파이프라인(모델/카메라/투영/뷰포트 행렬), edge-function 삼각형 래스터화, 깊이버퍼, DDA 선 그리기.
+- **Shirley 투영행렬·부호 검산**: n·f 음수 컨벤션의 투영/깊이 방향을 손으로 검증.
+- **빌드 이슈 진단**: MSVC `_USE_MATH_DEFINES`/`NOMINMAX`, 빈 `.vcxproj` 원인 파악·복구.
+- **2프로젝트 솔루션 구성** + Mac↔Windows git 동기화.
 
 ---
 
