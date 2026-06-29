@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Gamma", "Proj2_Gamma\Gamma.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Antialiasing", "Proj3_Antialiasing\Antialiasing.vcxproj", "{D93F259D-44E1-496C-A28D-B8555047A225}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Comparison", "Proj4_Comparison\Comparison.vcxproj", "{90A9D965-AEE5-438F-B59B-B802CADAB520}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -27,6 +29,10 @@ Global
 		{D93F259D-44E1-496C-A28D-B8555047A225}.Debug|x86.Build.0 = Debug|Win32
 		{D93F259D-44E1-496C-A28D-B8555047A225}.Release|x86.ActiveCfg = Release|Win32
 		{D93F259D-44E1-496C-A28D-B8555047A225}.Release|x86.Build.0 = Release|Win32
+		{90A9D965-AEE5-438F-B59B-B802CADAB520}.Debug|x86.ActiveCfg = Debug|Win32
+		{90A9D965-AEE5-438F-B59B-B802CADAB520}.Debug|x86.Build.0 = Debug|Win32
+		{90A9D965-AEE5-438F-B59B-B802CADAB520}.Release|x86.ActiveCfg = Release|Win32
+		{90A9D965-AEE5-438F-B59B-B802CADAB520}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
