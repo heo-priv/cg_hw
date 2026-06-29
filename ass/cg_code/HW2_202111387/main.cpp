@@ -37,7 +37,7 @@ static float gRotX = 25.0f;   // pitch (degrees)
 static float gRotY = -30.0f;  // yaw   (degrees)
 static float gTransX = 0.0f;  // scene translation
 static float gTransY = 0.0f;
-static float gDist = 10.0f;   // camera distance (zoom)
+static float gDist = 16.0f;   // camera distance (zoom)
 
 // mouse drag state
 static bool   gDragging = false;
@@ -253,7 +253,7 @@ static void processKeyboard(float dt)
 
     // reset
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
-        gRotX = 25.0f; gRotY = -30.0f; gTransX = gTransY = 0.0f; gDist = 10.0f;
+        gRotX = 25.0f; gRotY = -30.0f; gTransX = gTransY = 0.0f; gDist = 16.0f;
     }
 }
 
