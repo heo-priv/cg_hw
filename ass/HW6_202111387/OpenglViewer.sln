@@ -9,7 +9,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GouraudShading", "Proj2_Gou
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PhongShading", "Proj3_PhongShading\PhongShading.vcxproj", "{EECF3325-D903-4989-9BD0-0A7571DD5985}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MultipleSpheres", "Proj4_MultipleSpheres\MultipleSpheres.vcxproj", "{46E8A411-8869-4319-B609-F8D18D6044A7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeferredShading", "Proj4_DeferredShading\DeferredShading.vcxproj", "{46E8A411-8869-4319-B609-F8D18D6044A7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
