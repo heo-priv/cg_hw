@@ -201,7 +201,7 @@ static void scrollCallback(GLFWwindow* w, double xoff, double yoff)
 {
     gDist -= (float)yoff;                 // wheel up = zoom in
     if (gDist < 2.0f)  gDist = 2.0f;
-    if (gDist > 40.0f) gDist = 40.0f;
+    if (gDist > 80.0f) gDist = 80.0f;
 }
 
 static void mouseButtonCallback(GLFWwindow* w, int button, int action, int mods)
@@ -249,7 +249,7 @@ static void processKeyboard(float dt)
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) gDist -= zoomSpeed;
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) gDist += zoomSpeed;
     if (gDist < 2.0f)  gDist = 2.0f;
-    if (gDist > 40.0f) gDist = 40.0f;
+    if (gDist > 80.0f) gDist = 80.0f;
 
     // reset
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
@@ -381,6 +381,12 @@ int main(void)
         lastTime = now;
 
         processKeyboard(dt);
+
+        // Show the live camera distance in the title bar (handy for tuning the view)
+        char title[160];
+        snprintf(title, sizeof(title),
+                 "HW2 - Textured Cubes (202111387)  |  dist=%.1f  (wheel or Q/E to zoom)", gDist);
+        glfwSetWindowTitle(window, title);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(program);
