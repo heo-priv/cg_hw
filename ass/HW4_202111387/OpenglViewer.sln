@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RayTracer_v1", "Proj1_RayTr
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Gamma", "Proj2_Gamma\Gamma.vcxproj", "{2D26ACCE-D827-47ED-BB92-26727857BE51}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Antialiasing", "Proj3_Antialiasing\Antialiasing.vcxproj", "{D93F259D-44E1-496C-A28D-B8555047A225}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -21,6 +23,10 @@ Global
 		{2D26ACCE-D827-47ED-BB92-26727857BE51}.Debug|x86.Build.0 = Debug|Win32
 		{2D26ACCE-D827-47ED-BB92-26727857BE51}.Release|x86.ActiveCfg = Release|Win32
 		{2D26ACCE-D827-47ED-BB92-26727857BE51}.Release|x86.Build.0 = Release|Win32
+		{D93F259D-44E1-496C-A28D-B8555047A225}.Debug|x86.ActiveCfg = Debug|Win32
+		{D93F259D-44E1-496C-A28D-B8555047A225}.Debug|x86.Build.0 = Debug|Win32
+		{D93F259D-44E1-496C-A28D-B8555047A225}.Release|x86.ActiveCfg = Release|Win32
+		{D93F259D-44E1-496C-A28D-B8555047A225}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
