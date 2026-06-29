@@ -1,0 +1,19 @@
+# Visual Studio / MSVC build artifacts
+[Dd]ebug/
+[Rr]elease/
+x64/
+Win32/
+.vs/
+*.obj
+*.ilk
+*.pdb
+*.idb
+*.exe
+*.exe.recipe
+*.tlog
+*.log
+*.iobj
+*.ipdb
+
+# OS junk
+.DS_Store
