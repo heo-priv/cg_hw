@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RayIntersection", "Proj1_Ra
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PhongShading", "Proj2_PhongShading\PhongShading.vcxproj", "{518A2BF6-85FC-4569-9369-4D8982C675AC}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MoreLights", "Proj3_MoreLights\MoreLights.vcxproj", "{927E9259-57E8-432C-AEEE-7FA0DD37F255}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -21,6 +23,10 @@ Global
 		{518A2BF6-85FC-4569-9369-4D8982C675AC}.Debug|x86.Build.0 = Debug|Win32
 		{518A2BF6-85FC-4569-9369-4D8982C675AC}.Release|x86.ActiveCfg = Release|Win32
 		{518A2BF6-85FC-4569-9369-4D8982C675AC}.Release|x86.Build.0 = Release|Win32
+		{927E9259-57E8-432C-AEEE-7FA0DD37F255}.Debug|x86.ActiveCfg = Debug|Win32
+		{927E9259-57E8-432C-AEEE-7FA0DD37F255}.Debug|x86.Build.0 = Debug|Win32
+		{927E9259-57E8-432C-AEEE-7FA0DD37F255}.Release|x86.ActiveCfg = Release|Win32
+		{927E9259-57E8-432C-AEEE-7FA0DD37F255}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
