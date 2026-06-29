@@ -2,9 +2,9 @@
 
 Computer Graphics 과제 모음 (Konkuk Univ. / 학번 202111387)
 
-이 문서는 **각 과제마다 (1) 어려웠던 점, (2) AI(Claude) 도움을 받은 부분**을
-기록해두는 로그입니다. 작업하면서 그때그때 사실 위주로 남겨두고,
-제출/보고서용으로는 나중에 따로 정리합니다.
+이 문서는 각 과제·프로젝트마다 **(1) 무엇을 하는 프로젝트인지 + 주요 기능과 핵심 코드(발표용),
+(2) 어려웠던 점, (3) AI(Claude) 도움을 받은 부분**을 기록하는 로그입니다.
+작업하면서 그때그때 남겨두고, 제출/발표용으로는 나중에 다듬습니다.
 
 ---
 
@@ -18,6 +18,33 @@ Computer Graphics 과제 모음 (Konkuk Univ. / 학번 202111387)
   - 새 기능: 텍스처를 입힌 **사각뿔(pyramid)** — 큐브가 아닌 다른 형태
 - **환경**: Visual Studio 2022, Win32(x86), GLFW + GLEW + GLM (단일 프로젝트 `OpenglViewer.sln`)
 - **작업 방식**: 코드 편집은 Mac에서 → GitHub(`git push`) → Windows에서 `git pull` 후 VS에서 빌드/실행
+
+### 주요 기능 / 핵심 코드 (발표용)
+단일 프로젝트(`HW2_202111387`, `main.cpp`)지만 요구사항별로 코드가 나뉜다. 디스플레이는 OpenGL(GLFW+GLEW) 렌더 파이프라인 사용.
+
+- **텍스처 로딩 — `loadBMP()`**: 24비트 BMP를 직접 파싱(픽셀은 BGR·아래→위 순)해 OpenGL 텍스처로 업로드하고 밉맵 생성.
+  - 발표: "이미지 파일을 GPU 텍스처로 올리는 부분. 큐브마다 다른 BMP를 로드."
+- **셰이더 (인라인 GLSL)** — 정점은 화면좌표로 변환하고 UV를 넘기고, 프래그먼트는 그 UV의 텍스처 색을 출력:
+  ```glsl
+  // vertex                              // fragment
+  gl_Position = MVP * vec4(pos,1);       color = texture(sampler, UV).rgb;
+  UV = vertexUV;
+  ```
+- **두 큐브(크기·텍스처 다름) + 새 도형(피라미드) — `drawObject()`**: 같은 그리기 함수에 **모델 행렬과 텍스처만 바꿔** 호출.
+  ```cpp
+  MVP = Projection * lookAt(vec3(0,0,gDist), origin, up) * model;
+  // 큐브1: model = translate(-2.4,0,0),             texBrick   (크기 1.0)
+  // 큐브2: model = translate(2.2,0.4,0)*scale(0.6), texChecker (크기 0.6)
+  // 피라미드: 별도 정점버퍼(18정점) + texChecker            ← 새 기능(큐브 아닌 도형)
+  ```
+  - 발표: "크기는 `scale`로, 텍스처는 다른 BMP로 → 요구사항(서로 다른 크기·이미지의 큐브 2개) 충족. 피라미드는 새 도형."
+- **키보드 + 마우스 인터페이스** — 씬 전체에 적용되는 변환을 입력으로 갱신:
+  ```cpp
+  scene = translate(gTransX,gTransY) * rotate(gRotX, X축) * rotate(gRotY, Y축);
+  // processKeyboard(): 화살표=회전, WASD=이동, Q/E·휠=줌(gDist), R=리셋
+  // 마우스 콜백: 드래그=회전, 스크롤=줌
+  ```
+- **`#define GLM_FORCE_RADIANS`** (glm include 앞): GLM 0.9.5.4가 각도를 도(degree)로 읽는 문제를 막아 `perspective`/`rotate`가 라디안 기준으로 정상 동작 (아래 어려웠던 점 6 참고).
 
 ### 어려웠던 점
 1. **Visual Studio 입문** — VS를 처음 써봐서, 여러 파일 중 무엇을 열어야 빌드되는지 몰랐음.
@@ -59,6 +86,46 @@ Computer Graphics 과제 모음 (Konkuk Univ. / 학번 202111387)
   - **Q2 (Proj2_PhongShading)**: Phong 모델(ambient+diffuse+specular), 점광원(−4,4,−3), 백색 ambient, **shadow ray로 그림자**, 감마 보정.
   - **Q3 (Proj3_MoreLights)**: 새 기능 = **광원 추가**(두 번째 점광원). 셰이딩이 광원 리스트를 순회하도록 짜여 있어 확장 용이.
 - **환경**: VS2022, Win32(x86), GLFW+GLEW+GLM. 교수님 제공 샘플(`cg_code3`)을 베이스로 사용.
+
+### 공통 코드 구조 (발표용 핵심)
+세 프로젝트가 같은 레이트레이서 뼈대를 공유한다. OpenGL은 **결과 이미지를 띄우는 용도로만** 쓰고 교차·셰이딩은 전부 CPU에서 직접 계산.
+- **`Ray`** = `origin + t*dir`. **`Camera::getRay(ix,iy)`** 는 픽셀을 통과하는 eye ray 생성:
+  ```cpp
+  us = l + (r-l)*(ix+0.5)/nx;   vs = b + (t-b)*(iy+0.5)/ny;
+  dir = us*u + vs*v - d*w;       // 카메라는 -w 방향을 봄
+  ```
+- **`Surface`(추상) → `Plane`/`Sphere`**: 각자 `intersect()`로 교차 t 계산 (구=2차방정식, 평면=`(y₀-o.y)/dir.y`).
+- **`Scene::hit()`**: 모든 표면 중 **가장 가까운 교차**를 찾음. **`occluded()`**: 그림자 광선이 막히는지 검사.
+- **디스플레이**: `render()`가 `OutputImage`(float RGB)를 채우고 메인 루프가 `glDrawPixels`로 출력. **`j=0`이 화면 맨 아래 행**(OpenGL 좌표).
+
+### 프로젝트별 설명 (발표 포인트 + 핵심 코드)
+
+**Proj1 `RayIntersection` (Q1)** — 교차 여부만 흑백으로.
+```cpp
+Ray ray = camera.getRay(i, j);
+bool hit = scene.trace(ray, 0, INF);     // 최근접 교차가 있나?
+color = hit ? white : black;             // 맞으면 흰색, 아니면 검정
+```
+- 발표: "픽셀마다 광선을 쏘고, 가장 가까운 물체에 맞으면 흰색." → 평면(화면 아래 절반)과 구 3개가 실루엣으로 보임.
+
+**Proj2 `PhongShading` (Q2)** — 색·조명·그림자 추가.
+```cpp
+vec3 color = ka * Ia;                                 // ambient
+Ray shadowRay(p + n*eps, l);                          // 표면→광원
+if (!scene.occluded(shadowRay, eps, distToLight)) {   // 그림자가 아니면
+    color += kd * I * max(0, dot(n,l));               // diffuse
+    color += ks * I * pow(max(0, dot(r,v)), specPow); // specular(Phong)
+}
+```
+- 발표: "물체별 재질(ka/kd/ks)과 점광원(−4,4,−3)으로 Phong 셰이딩. **shadow ray**가 막히면 ambient만 남겨 그림자를 만든다." (빨강·초록·파랑 공, 초록만 하이라이트)
+
+**Proj3 `MoreLights` (Q3, 새 기능)** — 광원 추가.
+```cpp
+for (const Light& light : scene.lights) { /* diffuse+spec+그림자 합산 */ }
+scene.add(Light(vec3(-4,4,-3), vec3(0.5)));   // 광원 1
+scene.add(Light(vec3( 4,4,-3), vec3(0.5)));   // 광원 2 (추가)
+```
+- 발표: "셰이딩이 **광원 리스트를 순회**하도록 짜여 있어 광원 추가가 한 줄. 세기를 0.5로 낮춘 이유 = 1.0이면 한 광원만으로 바닥이 흰색까지 **포화**돼 단일 광원 그림자가 안 보이기 때문." → 공마다 그림자 2개·하이라이트 2개.
 
 ### 어려웠던 점
 1. **베이스 코드 혼동** — 과제2 환경(`cg_code`)을 복사해 쓰려 했으나, 과제3은 **OpenGL 래스터화 금지 + 3프로젝트 구조**라 맞지 않았음. 교수님이 따로 준 멀티 프로젝트 샘플(`cg_code3`)이 진짜 베이스였고, 그걸 `ass/HW3_202111387`로 교체.
