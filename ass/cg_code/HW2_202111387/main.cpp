@@ -24,6 +24,10 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+// The bundled GLM is 0.9.5.4, which treats angles as DEGREES by default.
+// We pass radians (via glm::radians), so force radian interpretation -
+// otherwise perspective()/rotate() misread the angles (extreme zoom, no rotation).
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -37,7 +41,7 @@ static float gRotX = 25.0f;   // pitch (degrees)
 static float gRotY = -30.0f;  // yaw   (degrees)
 static float gTransX = 0.0f;  // scene translation
 static float gTransY = 0.0f;
-static float gDist = 16.0f;   // camera distance (zoom)
+static float gDist = 12.0f;   // camera distance (zoom)
 
 // mouse drag state
 static bool   gDragging = false;
@@ -201,7 +205,7 @@ static void scrollCallback(GLFWwindow* w, double xoff, double yoff)
 {
     gDist -= (float)yoff;                 // wheel up = zoom in
     if (gDist < 2.0f)  gDist = 2.0f;
-    if (gDist > 80.0f) gDist = 80.0f;
+    if (gDist > 40.0f) gDist = 40.0f;
 }
 
 static void mouseButtonCallback(GLFWwindow* w, int button, int action, int mods)
@@ -249,11 +253,11 @@ static void processKeyboard(float dt)
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) gDist -= zoomSpeed;
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) gDist += zoomSpeed;
     if (gDist < 2.0f)  gDist = 2.0f;
-    if (gDist > 80.0f) gDist = 80.0f;
+    if (gDist > 40.0f) gDist = 40.0f;
 
     // reset
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
-        gRotX = 25.0f; gRotY = -30.0f; gTransX = gTransY = 0.0f; gDist = 16.0f;
+        gRotX = 25.0f; gRotY = -30.0f; gTransX = gTransY = 0.0f; gDist = 12.0f;
     }
 }
 
