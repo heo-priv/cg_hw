@@ -77,13 +77,78 @@ Computer Graphics 과제 모음 (Konkuk Univ. / 학번 202111387)
 
 ---
 
-## Assignment 4 — (작성 예정)
+## Assignment 4 — Improving the Ray Tracer (`ass/HW4_202111387`)
+
+### 개요
+- **목표**: HW3 레이트레이서를 **후처리(post-processing)** 로 개선. **한 솔루션에 4개 프로젝트**(문제별 1개)이고, 각 프로젝트가 이전 것 위에 기능을 **누적**한다.
+  - Q1 `RayTracer_v1` → Q2 `+Gamma` → Q3 `+Antialiasing` → Q4 `새 기능(비교)`
+- **공통 베이스**: HW3의 레이트레이서. 디스플레이는 `glDrawPixels`로 이미지 버퍼만 띄우고, 교차·셰이딩은 전부 CPU에서 직접 계산(OpenGL 래스터화 미사용).
+
+### 공통 코드 구조 (발표용 핵심)
+모든 프로젝트가 공유하는 뼈대:
+- **`Ray`**: `origin + t*dir`. 광선 하나.
+- **`Camera::getRay(ix,iy)`**: 픽셀을 통과하는 eye ray 생성. 핵심 공식
+  ```cpp
+  us = l + (r-l)*(ix+0.5)/nx;   vs = b + (t-b)*(iy+0.5)/ny;
+  dir = us*u + vs*v - d*w;      // 카메라는 -w 방향을 봄
+  ```
+- **`Surface`(추상) → `Plane`/`Sphere`**: 각자 `intersect()`로 광선-물체 교차 t를 계산. 구는 2차방정식, 평면은 `t=(y₀-oₓ.y)/dirₐ.y`.
+- **`Scene::hit()`**: 모든 표면을 돌며 **가장 가까운 교차**를 찾음. `Scene::occluded()`: 그림자 광선이 막히는지 검사.
+- **`shade()`**: Phong 조명 = `ka·Ia + Σ(kd·I·max(0,n·l) + ks·I·max(0,r·v)^p)`, 그림자면 ambient만.
+- **렌더 흐름**: `render()`가 픽셀마다 `getRay → scene.hit → shade` 결과를 `OutputImage`(float RGB)에 채우고, 메인 루프가 `glDrawPixels`로 출력.
+
+### 프로젝트별 설명 (발표 포인트 + 핵심 코드)
+
+**Proj1 `RayTracer_v1` (Q1)** — HW3 결과 재현 (교차 + Phong + 그림자), **감마 없음(linear)**.
+- 핵심: `shade()`의 Phong 식 + shadow ray. 단일 점광원(−4,4,−3), 흰색 ambient.
+- 출력 직전: `color = clamp(color, 0, 1);` (감마 미적용 → Q2와 구분)
+- 발표 포인트: "이게 기준(v1). 감마/AA는 이 위에 얹는다." 참조 이미지와 픽셀 단위로 일치.
+
+**Proj2 `Gamma` (Q2)** — Q1 + 감마 보정.
+- 핵심 한 줄: `color = pow(clamp(color,0,1), vec3(1.0f/2.2f));`
+- 역할: 모니터의 비선형(γ≈2.2) 응답을 보정 → **중간톤이 밝아져** 눈에 자연스럽게 보임. 흑(0)·백(1)은 그대로, 중간만 상승.
+- 발표 포인트: "왜 ^(1/2.2)인가" — 디스플레이 감마의 역보정.
+
+**Proj3 `Antialiasing` (Q3)** — Q2 + 픽셀당 64샘플 슈퍼샘플링.
+- 핵심 코드:
+  ```cpp
+  for (int s = 0; s < 64; ++s) {                 // 픽셀 영역 안 랜덤 64개
+      Ray ray = camera.getRay(i + jitter(rng), j + jitter(rng));
+      if (scene.hit(ray, 0, INF, rec)) sum += shade(...);
+  }
+  vec3 color = sum / 64.0f;                       // 박스필터 평균(가중치 1/N)
+  color = pow(clamp(color,0,1), vec3(1/2.2f));    // 평균은 선형공간, 감마는 맨 마지막
+  ```
+- 추가한 것: 서브픽셀 광선용 `Camera::getRay(float px,float py)` 오버로드.
+- 역할: 경계 픽셀이 물체+배경을 섞어 평균 → **계단현상(jaggies) 제거**.
+- 발표 포인트: ① 왜 픽셀 안에서 여러 번 쏘나(경계 부분 표본화), ② **평균을 선형공간에서 한 뒤 감마**를 적용하는 순서가 왜 옳은지.
+
+**Proj4 `Comparison` (Q4, 새 기능)** — 분할 화면 샘플 수 비교.
+- 핵심 코드:
+  ```cpp
+  bool aa = (i >= Width/2);                        // 왼쪽=OFF, 오른쪽=ON
+  int  n  = aa ? 64 : 1;
+  Ray ray = aa ? camera.getRay(i+jitter(rng), j+jitter(rng))
+               : camera.getRay(i, j);              // 1샘플은 픽셀 중심(계단)
+  ...
+  if (i == Width/2) color = vec3(1,1,0);           // 노란 경계선
+  ```
+- 역할: **왼쪽(1샘플, 계단) vs 오른쪽(64샘플, 매끈)** 을 한 이미지로 직접 비교.
+- 발표 포인트: AA의 효과를 한 장으로 보여줌. (PDF 예시 중 "different sampling rates"에 해당)
 
 ### 어려웠던 점
-- _작업하면서 기록_
+1. **Q1=감마없음 / Q2=감마 분리** — HW3에선 감마를 셰이딩에 섞어 넣었는데, HW4는 단계가 나뉘어 있어 Q1은 감마를 **빼야** 참조 이미지와 일치. 후처리 단계를 명확히 분리해야 했음.
+2. **참조 이미지 정확 일치** — Q1은 "이미지와 동일해야 함"이라, specular 모델(Phong `r·v`, power 32)·색·하이라이트 크기가 참조와 맞는지 확인 필요. (PDF를 이미지로 렌더해 대조)
+3. **4프로젝트를 한 솔루션에** — 프로젝트마다 새 GUID 부여 + `.sln` 편집으로 등록하는 작업을 4번 반복(스크립트로 자동화).
+4. **64샘플 렌더 부하** — 픽셀당 64배라 창이 뜨기까지 지연. `Debug`는 특히 느려서 `Release`(x86) 권장.
+5. **PDF 읽기 환경** — 로컬에 `poppler` 미설치라 PDF 페이지 렌더가 안 돼, `brew install poppler` 후 텍스트·이미지 추출로 지시사항·참조 이미지 확인.
 
 ### AI 도움을 받은 부분
-- _작업하면서 기록_
+- **후처리 구현 전부**: 감마 보정, 64샘플 박스필터 안티앨리어싱(서브픽셀 `getRay` 오버로드 포함), 분할 화면 비교.
+- **참조 이미지 분석**: PDF의 Q1 그림을 이미지로 추출·대조해 "감마 분리" 결정과 specular 모델 일치 확인.
+- **올바른 파이프라인 순서**: AA 평균을 **선형공간에서 한 뒤 감마**를 마지막에 적용.
+- **4프로젝트 솔루션 자동 구성**: 프로젝트 복제·GUID·`.sln` 등록을 파이썬으로 처리.
+- **빌드/동기화**: 링커 설정, Mac↔Windows git push/pull, self-contained 라이브러리 포함.
 
 ---
 
