@@ -17,3 +17,6 @@ Win32/
 
 # OS junk
 .DS_Store
+
+# Personal presentation notes (not part of submission)
+docs/
