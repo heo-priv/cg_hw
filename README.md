@@ -8,7 +8,7 @@ Computer Graphics 과제 모음 (Konkuk Univ. / 학번 202111387)
 
 ---
 
-## Assignment 2 — Textured Cubes (`ass/cg_code`)
+## Assignment 2 — Textured Cubes (`ass/HW2_202111387`)
 
 ### 개요
 - **요구사항**: 서로 다른 텍스처·크기의 큐브 2개 이상 / 키보드+마우스로 씬 회전·이동 / 새 기능 1개
